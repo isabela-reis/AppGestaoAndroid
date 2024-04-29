@@ -5,63 +5,54 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    tools:context=".EditActivity">
 
     <EditText
-        android:id="@+id/editTipoDespesa"
+        android:id="@+id/TipoDespesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Despesa" />
 
     <EditText
-        android:id="@+id/editTextDate"
+        android:id="@+id/TextDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="DD/MM/YYYY"
         android:inputType="date" />
 
     <EditText
-        android:id="@+id/editValorDespesa"
+        android:id="@+id/ValorDespesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/valor" />
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="379dp"
         android:layout_height="86dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/buttonAddDesp"
-            android:layout_width="180dp"
+            android:id="@+id/buttonEditarDesp"
+            android:layout_width="97dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_weight="1"
-            android:text="@string/adicionar_despesa" />
+            android:text="Editar Despesa" />
 
         <Button
-            android:id="@+id/buttonEditDesp"
+            android:id="@+id/buttonVoltar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Editar" />
+            android:text="Voltar" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewDesp"
+        android:id="@+id/recyclerViewEditDesp"
         android:layout_width="match_parent"
-        android:layout_height="359dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1" >
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <Button
-        android:id="@+id/buttonCompartilhar"
-        android:layout_width="259dp"
-        android:layout_height="17dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Compartilhar" />
+        android:layout_marginTop="16dp" />
 
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.appgestao;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,13 +21,17 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import com.example.appgestao.model.Despesa;
+import com.example.appgestao.EditActivity;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int NEW_EXPENSE_ACTIVITY_REQUEST_CODE = 1;
 
     private EditText editTipoDespesa;
     private EditText editTextDate;
     private EditText editValorDespesa;
     private Button buttonAddDesp;
+    private Button buttonEditDesp;
+    private Button buttonCompartilhar;
     private RecyclerView recyclerViewDesp;
     private DespesaAdapter despesaAdapter;
     private List<Despesa> despesas = new ArrayList<>();
@@ -40,8 +45,9 @@ public class MainActivity extends AppCompatActivity {
         editTipoDespesa = findViewById(R.id.editTipoDespesa);
         editTextDate = findViewById(R.id.editTextDate);
         editValorDespesa = findViewById(R.id.editValorDespesa);
-
         buttonAddDesp = findViewById(R.id.buttonAddDesp);
+        buttonEditDesp = findViewById(R.id.buttonEditDesp);
+        buttonCompartilhar = findViewById(R.id.buttonCompartilhar);
         recyclerViewDesp = findViewById(R.id.recyclerViewDesp);
 
         editTextDate.addTextChangedListener(new TextWatcher() {
@@ -120,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 Double valorDespesa = Double.valueOf(editValorDespesa.getText().toString().trim());
 
                 if (!tipoDespesa.isEmpty()) {
-                    Despesa despesa= new Despesa();
+                    Despesa despesa = new Despesa();
                     despesa.setTipoDespesa(tipoDespesa);
                     despesa.setDate(textData);
                     despesa.setValor(valorDespesa);
@@ -132,15 +138,79 @@ public class MainActivity extends AppCompatActivity {
                     editTextDate.setText("");
                     editValorDespesa.setText("");
 
-                    showDespAddedDialog (String.valueOf(despesa));
+                    showDespAddedDialog(String.valueOf(despesa));
                 } else {
                     Toast.makeText(getApplicationContext(), "Informe uma despesa! ", Toast.LENGTH_SHORT).show();
                 }
 
             }
         });
+
+        buttonCompartilhar.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick (View view){
+            sendDespByMessage();
+        }
+
+
+    });
+        buttonEditDesp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {editDesp(despesaAdapter.getItemCount());
+            }
+        });
+
+
     }
-    private void addTaskToView(String despesa) {
+
+    public void launchEditActivity(View view) {
+        Intent intent = new Intent(this, EditActivity.class);
+        startActivityForResult(intent, NEW_EXPENSE_ACTIVITY_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == NEW_EXPENSE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+
+            String tipoDespesa = data.getStringExtra("EXTRA_REPLY_TIPODESPESA");
+            String textDate = data.getStringExtra("EXTRA_REPLY_TEXTDATE");
+            String valorDespesa = data.getStringExtra("EXTRA_REPLY_VALORDESPESA");
+
+            // Aqui você pode adicionar ou editar a despesa na sua lista de despesas
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    R.string.empty_not_saved,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void editDesp(int idDespesa) {
+            Intent intent = new Intent(MainActivity.this, EditActivity.class);
+            intent.putExtra("id_despesa", idDespesa);
+            startActivity(intent);
+    }
+
+    private void sendDespByMessage() {
+        Intent messageIntent = new Intent(Intent.ACTION_SEND);
+        messageIntent.setType("text/plain"); // Defina o tipo da Intent para enviar uma mensagem de texto
+        messageIntent.putExtra(Intent.EXTRA_TEXT, generateDespText()); // Use o conteúdo gerado para a mensagem
+        startActivity(Intent.createChooser(messageIntent, "Enviar Mensagem de Texto"));
+    }
+
+    private String generateDespText() {
+        StringBuilder sb = new StringBuilder();
+        for (Despesa despesa : despesas) {
+            sb.append("Título: ").append(despesa.getTipoDespesa()).append("\n");
+            sb.append("Data: ").append(despesa.getDate()).append("\n");
+            sb.append("Valor: ").append(despesa.getValor()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    private void addDespToView(String despesa) {
         TextView textView = new TextView(this);
         textView.setText(despesa);
         recyclerViewDesp.addView(textView);
@@ -160,28 +230,34 @@ public class MainActivity extends AppCompatActivity {
         private List<Despesa> despesas;
         public DespesaAdapter(List<Despesa> despesas) {
             this.despesas = despesas;
+
         }
         @NonNull
         @Override
 
         public DespesaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_despesa, parent, false);
             return new DespesaViewHolder(view);
+
+
         }
 
         @Override
 
         public void onBindViewHolder(@NonNull DespesaViewHolder holder, int position) {
 
-            Despesa despesa = despesas.get(position);
+            Despesa despesa = despesas.get(holder.getAdapterPosition());
             holder.bind(despesa);
+
         }
 
         @Override
         public int getItemCount() {
             return despesas.size();
         }
+
         public class DespesaViewHolder extends RecyclerView.ViewHolder {
             private TextView textViewTipoDespesa;
             private TextView textViewTextDate;
@@ -190,17 +266,24 @@ public class MainActivity extends AppCompatActivity {
             public DespesaViewHolder(@NonNull View itemView) {
                 super(itemView);
                 textViewTipoDespesa = itemView.findViewById(R.id.textViewTipoDespesa);
-                textViewTextDate= itemView.findViewById(R.id.textViewTextDate);
-                textViewValorDespesa= itemView.findViewById(R.id.textViewValorDespesa);
+                textViewTextDate = itemView.findViewById(R.id.textViewTextDate);
+                textViewValorDespesa = itemView.findViewById(R.id.textViewValorDespesa);
+
 
             }
+
+
             public void bind(Despesa despesa) {
                 textViewTipoDespesa.setText("Despesa: " + despesa.getTipoDespesa());
                 textViewTextDate.setText("Data: " + despesa.getDate());
                 textViewValorDespesa.setText("Valor: " + despesa.getValor());
 
             }
+
+
+
         }
+
     }
 
 }

@@ -1,12 +1,18 @@
 package com.example.appgestao.model;
 
 public class Despesa {
+
+    private static int nextId = 1; // Variável estática para controlar o próximo ID
+    private int id;
     private String tipoDespesa;
     private Double valor;
     private String date;
 
-    public Despesa(String tipoDespes, Double valor, String date) {
-        this.tipoDespesa = tipoDespes;
+
+
+    public Despesa(String tipoDespesa, Double valor, String date) {
+        this.id = nextId++;
+        this.tipoDespesa = tipoDespesa;
         this.valor = valor;
         this.date = date;
 
@@ -17,10 +23,12 @@ public class Despesa {
     }
 
     public String getTipoDespesa() {
+
         return tipoDespesa;
     }
 
     public void setTipoDespesa(String tipoDespesa) {
+
         this.tipoDespesa = tipoDespesa;
     }
 
@@ -29,15 +37,26 @@ public class Despesa {
     }
 
     public void setValor(Double valor) {
+
         this.valor = valor;
     }
 
     public String getDate() {
+
         return date;
     }
 
     public void setDate(String date) {
+
         this.date = date;
     }
+
+    public int getId() {
+
+        return id;
+    }
+
+
+
 
 }
