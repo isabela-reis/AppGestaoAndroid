@@ -1,6 +1,8 @@
 package com.example.appgestao.model;
 
-public class Despesa {
+import java.io.Serializable;
+
+public class Despesa implements Serializable {
 
     private static int nextId = 1; // Variável estática para controlar o próximo ID
     private int id;
@@ -10,12 +12,11 @@ public class Despesa {
 
 
 
-    public Despesa(String tipoDespesa, Double valor, String date) {
+    public Despesa(String tipoDespesa, String date, Double valor) {
         this.id = nextId++;
         this.tipoDespesa = tipoDespesa;
-        this.valor = valor;
         this.date = date;
-
+        this.valor = valor;
     }
 
     public Despesa() {

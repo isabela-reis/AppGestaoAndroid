@@ -147,20 +147,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         buttonCompartilhar.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick (View view){
-            sendDespByMessage();
-        }
+            @Override
+            public void onClick(View view) {
+                sendDespByMessage();
+            }
 
 
-    });
+        });
         buttonEditDesp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                startActivity(intent);
+                if (despesaSelecionada != null) {
+                    Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                    intent.putExtra("Despesa", despesaSelecionada);
+                    startActivity(intent);
+                } else {
 
+
+                }
             }
+        });
            /* public void onClick(View view) {editDesp(despesaAdapter.getItemCount());
             }*/
 
@@ -169,14 +175,16 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("id_despesa", idDespesa);
                 startActivity(intent);
                 finish();
-            }*/
-        });
-
-
+            }
+        });*/
     }
 
-    public void launchEditActivity(View view) {
+
+
+
+    public void launchEditActivity(Despesa despesa) {
         Intent intent = new Intent(this, EditActivity.class);
+        intent.putExtra("Despesa", despesa);
         startActivityForResult(intent, NEW_EXPENSE_ACTIVITY_REQUEST_CODE);
     }
 
@@ -198,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
     }
-
 
 
     private void sendDespByMessage() {
@@ -223,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(despesa);
         recyclerViewDesp.addView(textView);
     }
+
     private void showDespAddedDialog(String despesa) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Despesa adicionada com sucesso!")
@@ -236,10 +244,15 @@ public class MainActivity extends AppCompatActivity {
 
     private class DespesaAdapter extends RecyclerView.Adapter<DespesaAdapter.DespesaViewHolder> {
         private List<Despesa> despesas;
+
         public DespesaAdapter(List<Despesa> despesas) {
             this.despesas = despesas;
-
         }
+
+        public Despesa getDespesa(int position) {
+            return despesas.get(position);
+        }
+
         @NonNull
         @Override
 
@@ -266,19 +279,39 @@ public class MainActivity extends AppCompatActivity {
             return despesas.size();
         }
 
-        public class DespesaViewHolder extends RecyclerView.ViewHolder {
-            private TextView textViewTipoDespesa;
-            private TextView textViewTextDate;
-            private TextView textViewValorDespesa;
+        public class DespesaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+            TextView textViewTipoDespesa;
+            TextView textViewTextDate;
+            TextView textViewValorDespesa;
 
             public DespesaViewHolder(@NonNull View itemView) {
                 super(itemView);
+
                 textViewTipoDespesa = itemView.findViewById(R.id.textViewTipoDespesa);
                 textViewTextDate = itemView.findViewById(R.id.textViewTextDate);
                 textViewValorDespesa = itemView.findViewById(R.id.textViewValorDespesa);
 
-
+                itemView.setOnClickListener(this); // Adiciona o OnClickListener ao itemView
             }
+
+            @Override
+            public void onClick(View view) {
+                int position = getAdapterPosition();
+                Despesa despesaSelecionada = despesas.get(position);
+                // Agora você tem a despesa selecionada e pode passá-la para a MainActivity
+                ((MainActivity) view.getContext()).setDespesaSelecionada(despesaSelecionada);
+            }
+
+
+/*
+            @Override
+            public void onClick(View view) {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    // Agora você tem a posição do item clicado
+                    // Você pode usar isso para obter a despesa correspondente da sua lista de despesas
+                }
+            }*/
 
 
             public void bind(Despesa despesa) {
@@ -288,10 +321,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
-
-
         }
-
     }
+    private Despesa despesaSelecionada;
 
+    public void setDespesaSelecionada(Despesa despesa) {
+        this.despesaSelecionada = despesa;
+    }
 }
+
+
+
+

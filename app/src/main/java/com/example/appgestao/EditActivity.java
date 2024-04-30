@@ -22,12 +22,22 @@ public class EditActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
+        Despesa despesa = (Despesa) getIntent().getSerializableExtra("Despesa");
+        // Agora você pode usar o objeto despesa para preencher seus campos EditText
+
 
         // Inicialize os elementos de interface do usuário
         TipoDespesa = findViewById(R.id.TipoDespesa);
         TextDate = findViewById(R.id.TextDate);
-        ValorDespesa= findViewById(R.id.ValorDespesa);
+        ValorDespesa = findViewById(R.id.ValorDespesa);
 
+        // Obtenha a despesa passada e preencha os campos EditText
+        despesa = (Despesa) getIntent().getSerializableExtra("Despesa");
+        assert despesa != null;
+        TipoDespesa.setText(despesa.getTipoDespesa());
+        TextDate.setText(despesa.getDate());
+        ValorDespesa.setText(String.valueOf(despesa.getValor()));
+    }
        /* // Recupere a despesa selecionada (passada como extra na Intent)
         Despesa despesa = getIntent().getParcelableExtra("despesa");
 
@@ -37,7 +47,7 @@ public class EditActivity extends AppCompatActivity {
         ValorDespesa.setText(String.valueOf(despesa.getValor()));
 */
 
-    }
+
     // Implemente a lógica para salvar as alterações (ao clicar em um botão "Salvar")
     public void saveEdit(View view) {
         Intent replyIntent = new Intent();
@@ -48,11 +58,12 @@ public class EditActivity extends AppCompatActivity {
         } else {
             String tipoDespesa = TipoDespesa.getText().toString();
             String textDate = TextDate.getText().toString();
-            String valorDespesa = ValorDespesa.getText().toString();
+            double valorDespesa = Double.parseDouble(ValorDespesa.getText().toString());
 
-            replyIntent.putExtra("EXTRA_REPLY_TIPODESPESA", tipoDespesa);
-            replyIntent.putExtra("EXTRA_REPLY_TEXTDATE", textDate);
-            replyIntent.putExtra("EXTRA_REPLY_VALORDESPESA", valorDespesa);
+
+            Despesa despesa = new Despesa(tipoDespesa, textDate, valorDespesa);
+            replyIntent.putExtra("EXTRA_REPLY_DESPESA", despesa);
+
 
             setResult(RESULT_OK, replyIntent);
         }
