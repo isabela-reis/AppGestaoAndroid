@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.example.appgestao.model.Despesa;
-
+import com.example.appgestao.MainActivity;
 public class EditActivity extends AppCompatActivity {
     public static final String EXTRA_REPLY = "com.example.android.expenselist.REPLY";
 
@@ -28,14 +28,14 @@ public class EditActivity extends AppCompatActivity {
         TextDate = findViewById(R.id.TextDate);
         ValorDespesa= findViewById(R.id.ValorDespesa);
 
-        // Recupere a despesa selecionada (passada como extra na Intent)
+       /* // Recupere a despesa selecionada (passada como extra na Intent)
         Despesa despesa = getIntent().getParcelableExtra("despesa");
 
         // Preencha os campos de edição com os valores da despesa
         TipoDespesa.setText(despesa.getTipoDespesa());
         TextDate.setText(despesa.getDate());
         ValorDespesa.setText(String.valueOf(despesa.getValor()));
-
+*/
 
     }
     // Implemente a lógica para salvar as alterações (ao clicar em um botão "Salvar")

@@ -11,7 +11,7 @@
         android:id="@+id/editTipoDespesa"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Despesa" />
+        android:hint="@string/despesa" />
 
     <EditText
         android:id="@+id/editTextDate"
@@ -44,24 +44,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Editar" />
+            android:text="@string/editar" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewDesp"
         android:layout_width="match_parent"
-        android:layout_height="359dp"
-        android:layout_marginTop="16dp"
-        android:layout_weight="1" >
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <Button
-        android:id="@+id/buttonCompartilhar"
-        android:layout_width="259dp"
-        android:layout_height="17dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="Compartilhar" />
+        android:layout_marginTop="16dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:orientation="vertical">
+        <Button
+            android:id="@+id/buttonCompartilhar"
+            android:layout_width="319dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:text="Compartilhar" />
+
+    </LinearLayout>
 
 </LinearLayout>

@@ -156,8 +156,20 @@ public class MainActivity extends AppCompatActivity {
     });
         buttonEditDesp.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {editDesp(despesaAdapter.getItemCount());
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                startActivity(intent);
+
             }
+           /* public void onClick(View view) {editDesp(despesaAdapter.getItemCount());
+            }*/
+
+          /*  public void editDesp (int idDespesa) {
+                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                intent.putExtra("id_despesa", idDespesa);
+                startActivity(intent);
+                finish();
+            }*/
         });
 
 
@@ -187,11 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void editDesp(int idDespesa) {
-            Intent intent = new Intent(MainActivity.this, EditActivity.class);
-            intent.putExtra("id_despesa", idDespesa);
-            startActivity(intent);
-    }
+
 
     private void sendDespByMessage() {
         Intent messageIntent = new Intent(Intent.ACTION_SEND);

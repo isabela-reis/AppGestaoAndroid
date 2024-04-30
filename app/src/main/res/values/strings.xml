@@ -4,4 +4,6 @@
     <string name="valor">Valor</string>
     <string name="tipo_de_despesa">Tipo de despesa</string>
     <string name="empty_not_saved">Nenhuma despesa salva porque o campo estava vazio.</string>
+    <string name="despesa">Despesa</string>
+    <string name="editar">Editar</string>
 </resources>
