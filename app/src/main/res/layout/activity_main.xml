@@ -51,8 +51,11 @@
         android:id="@+id/recyclerViewDesp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:layout_marginTop="16dp" />
+        android:allowClickWhenDisabled="true"
+        android:clickable="true"
+        android:contextClickable="true" />
 
     <LinearLayout
         android:layout_width="match_parent"

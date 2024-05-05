@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -10,23 +10,42 @@
     <EditText
         android:id="@+id/textViewTipoDespesa"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:duplicateParentState="false"
+        android:selectAllOnFocus="true"
+        android:textIsSelectable="true" />
 
     <EditText
         android:id="@+id/textViewTextDate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:editable="false"
+        android:contextClickable="true"
+        android:selectAllOnFocus="true"
+        android:textIsSelectable="true"/>
 
     <EditText
         android:id="@+id/textViewValorDespesa"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:allowClickWhenDisabled="true"
+        android:clickable="true"
+        android:textIsSelectable="true"
+        android:selectAllOnFocus="true" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewDesp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:layout_weight="1"
-        android:layout_marginTop="16dp" />
+        android:clickable="true"
+        android:contextClickable="true"
+        android:textIsSelectable="true"
+        android:keyboardNavigationCluster="false" />
+
 
 </LinearLayout>

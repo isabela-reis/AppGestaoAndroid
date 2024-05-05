@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18190935486",
+    "project_id": "appgestao-2fcbd",
+    "storage_bucket": "appgestao-2fcbd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18190935486:android:608cdc63a7da5ab42cc5ef",
+        "android_client_info": {
+          "package_name": "com.example.appgestao"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyARzY7wsdVeRUER9npS8fl3qEtZNyyYNfk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

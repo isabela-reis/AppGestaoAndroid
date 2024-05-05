@@ -1,9 +1,13 @@
-package com.example.appgestao;
+ package com.example.appgestao;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,11 @@ import android.content.DialogInterface;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -34,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonCompartilhar;
     private RecyclerView recyclerViewDesp;
     private DespesaAdapter despesaAdapter;
+    private Despesa despesaSelecionada;
+    private AlertDialog dialog;
     private List<Despesa> despesas = new ArrayList<>();
 
 
@@ -151,41 +162,34 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 sendDespByMessage();
             }
-
-
         });
+
         buttonEditDesp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (despesaSelecionada != null) {
-                    Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                    intent.putExtra("Despesa", despesaSelecionada);
-                    startActivity(intent);
-                } else {
 
+                if (!(despesaSelecionada == null)) {
+                    launchEditActivity(despesaSelecionada);
 
                 }
             }
         });
-           /* public void onClick(View view) {editDesp(despesaAdapter.getItemCount());
-            }*/
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
 
-          /*  public void editDesp (int idDespesa) {
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                intent.putExtra("id_despesa", idDespesa);
-                startActivity(intent);
-                finish();
-            }
-        });*/
+        // Descarte o diálogo se ele estiver sendo exibido
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
     }
 
+    public void setDespesaSelecionada(Despesa despesa) {
 
-
-
-    public void launchEditActivity(Despesa despesa) {
-        Intent intent = new Intent(this, EditActivity.class);
-        intent.putExtra("Despesa", despesa);
-        startActivityForResult(intent, NEW_EXPENSE_ACTIVITY_REQUEST_CODE);
+        this.despesaSelecionada = despesa;
+        Log.d("metodo", "Despesa selecionada: " + despesa.getTipoDespesa());
+        System.out.println("Despesa selecionada: " + despesa.getTipoDespesa());
     }
 
     @Override
@@ -207,6 +211,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // MainActivity
+    public void launchEditActivity(Despesa despesa) {
+        Intent intent = new Intent(this, EditActivity.class);
+        intent.putExtra("despesa", despesa);
+        mStartForResult.launch(intent);
+    }
+
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    Despesa despesaEditada = (Despesa) data.getSerializableExtra("despesa");
+                    // Atualize sua lista de despesas aqui
+                    int index = despesas.indexOf(despesaSelecionada);
+                    if (index != -1) {
+                        despesas.set(index, despesaEditada);
+                        despesaAdapter.notifyItemChanged(index);
+                    }
+                }
+            });
+
 
     private void sendDespByMessage() {
         Intent messageIntent = new Intent(Intent.ACTION_SEND);
@@ -225,12 +251,6 @@ public class MainActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    private void addDespToView(String despesa) {
-        TextView textView = new TextView(this);
-        textView.setText(despesa);
-        recyclerViewDesp.addView(textView);
-    }
-
     private void showDespAddedDialog(String despesa) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Despesa adicionada com sucesso!")
@@ -242,15 +262,20 @@ public class MainActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    private void SelectDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Selecione uma despesa!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+        builder.create().show();
+    }
     private class DespesaAdapter extends RecyclerView.Adapter<DespesaAdapter.DespesaViewHolder> {
         private List<Despesa> despesas;
-
         public DespesaAdapter(List<Despesa> despesas) {
             this.despesas = despesas;
-        }
-
-        public Despesa getDespesa(int position) {
-            return despesas.get(position);
         }
 
         @NonNull
@@ -261,17 +286,22 @@ public class MainActivity extends AppCompatActivity {
 
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_despesa, parent, false);
             return new DespesaViewHolder(view);
-
-
         }
 
         @Override
 
         public void onBindViewHolder(@NonNull DespesaViewHolder holder, int position) {
 
-            Despesa despesa = despesas.get(holder.getAdapterPosition());
+            Despesa despesa = despesas.get(position);
             holder.bind(despesa);
-
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ((MainActivity) view.getContext()).setDespesaSelecionada(despesa);
+                    Log.d("onbind", "Despesa selecionada: " + despesa.getTipoDespesa());
+                    System.out.println("Despesa selecionada: " + despesa.getTipoDespesa());
+                }
+            });
         }
 
         @Override
@@ -279,40 +309,19 @@ public class MainActivity extends AppCompatActivity {
             return despesas.size();
         }
 
-        public class DespesaViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public class DespesaViewHolder extends RecyclerView.ViewHolder  {
             TextView textViewTipoDespesa;
             TextView textViewTextDate;
             TextView textViewValorDespesa;
 
             public DespesaViewHolder(@NonNull View itemView) {
                 super(itemView);
-
+                //itemView.setOnClickListener(this); // Adiciona o OnClickListener ao itemView
                 textViewTipoDespesa = itemView.findViewById(R.id.textViewTipoDespesa);
                 textViewTextDate = itemView.findViewById(R.id.textViewTextDate);
                 textViewValorDespesa = itemView.findViewById(R.id.textViewValorDespesa);
 
-                itemView.setOnClickListener(this); // Adiciona o OnClickListener ao itemView
             }
-
-            @Override
-            public void onClick(View view) {
-                int position = getAdapterPosition();
-                Despesa despesaSelecionada = despesas.get(position);
-                // Agora você tem a despesa selecionada e pode passá-la para a MainActivity
-                ((MainActivity) view.getContext()).setDespesaSelecionada(despesaSelecionada);
-            }
-
-
-/*
-            @Override
-            public void onClick(View view) {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    // Agora você tem a posição do item clicado
-                    // Você pode usar isso para obter a despesa correspondente da sua lista de despesas
-                }
-            }*/
-
 
             public void bind(Despesa despesa) {
                 textViewTipoDespesa.setText("Despesa: " + despesa.getTipoDespesa());
@@ -321,14 +330,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
 
+
+
+        }
         }
     }
-    private Despesa despesaSelecionada;
 
-    public void setDespesaSelecionada(Despesa despesa) {
-        this.despesaSelecionada = despesa;
-    }
-}
 
 
 

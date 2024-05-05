@@ -1,6 +1,7 @@
 package com.example.appgestao.model;
 
 import java.io.Serializable;
+import com.example.appgestao.MainActivity;
 
 public class Despesa implements Serializable {
 
@@ -9,8 +10,6 @@ public class Despesa implements Serializable {
     private String tipoDespesa;
     private Double valor;
     private String date;
-
-
 
     public Despesa(String tipoDespesa, String date, Double valor) {
         this.id = nextId++;
@@ -56,8 +55,5 @@ public class Despesa implements Serializable {
 
         return id;
     }
-
-
-
 
 }
