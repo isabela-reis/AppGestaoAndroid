@@ -13,22 +13,30 @@
         android:theme="@style/Theme.AppGestao"
         tools:targetApi="31">
         <activity
+            android:name=".CadastrarActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter> <action android:name="android.intent.action.SEND" />
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-               <action android:name="android.intent.action.VIEW" />
+
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="www.app.gestao.com"
                     android:pathPrefix="/despesa"
@@ -44,6 +52,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
         <service android:name=".model.SyncService" />
     </application>
 

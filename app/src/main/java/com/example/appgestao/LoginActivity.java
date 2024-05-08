@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText TextUsername;
     private EditText TextPassword;
     private Button btnLogin;
+    private Button btnCadastro;
     private FirebaseAuth mAuth;
 
     @Override
@@ -32,11 +33,19 @@ public class LoginActivity extends AppCompatActivity {
         TextUsername = findViewById(R.id.TextUsername);
         TextPassword = findViewById(R.id.TextPassword);
         btnLogin = findViewById(R.id.btnLogin);
-
+        btnCadastro = findViewById(R.id.btnCadastro);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loginUser();
+            }
+        });
+
+        btnCadastro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, CadastrarActivity.class);
+                startActivity(intent);
             }
         });
     }
