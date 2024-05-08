@@ -1,11 +1,10 @@
 package com.example.appgestao.model;
 
 import java.io.Serializable;
-import com.example.appgestao.MainActivity;
 
 public class Despesa implements Serializable {
 
-    private static int nextId = 1; // Variável estática para controlar o próximo ID
+    private static int nextId = 1;
     private int id;
     private String tipoDespesa;
     private Double valor;

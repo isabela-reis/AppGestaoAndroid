@@ -1,10 +1,8 @@
- package com.example.appgestao;
+package com.example.appgestao;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,8 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -30,9 +26,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import com.example.appgestao.model.Despesa;
-import com.example.appgestao.EditActivity;
+import com.example.appgestao.model.SyncService;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
-public class MainActivity extends AppCompatActivity {
+
+ public class MainActivity extends AppCompatActivity {
     public static final int NEW_EXPENSE_ACTIVITY_REQUEST_CODE = 1;
 
     private EditText editTipoDespesa;
@@ -46,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private Despesa despesaSelecionada;
     private AlertDialog dialog;
     private List<Despesa> despesas = new ArrayList<>();
-
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         buttonEditDesp = findViewById(R.id.buttonEditDesp);
         buttonCompartilhar = findViewById(R.id.buttonCompartilhar);
         recyclerViewDesp = findViewById(R.id.recyclerViewDesp);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference();
 
         editTextDate.addTextChangedListener(new TextWatcher() {
 
@@ -78,14 +79,15 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 2; i <= cl && i < 6; i += 2) {
                         sel++;
                     }
-                    //Fix for pressing delete next to a forward slash
+
                     if (clean.equals(cleanC)) sel--;
 
                     if (clean.length() < 8) {
+
                         clean = clean + ddmmyyyy.substring(clean.length());
+
                     } else {
-                        //This part makes sure that when we finish entering numbers
-                        //the date is correct, fixing it otherwise
+
                         int day = Integer.parseInt(clean.substring(0, 2));
                         int mon = Integer.parseInt(clean.substring(2, 4));
                         int year = Integer.parseInt(clean.substring(4, 8));
@@ -94,9 +96,6 @@ public class MainActivity extends AppCompatActivity {
                         cal.set(Calendar.MONTH, mon - 1);
                         year = (year < 1900) ? 1900 : (year > 2100) ? 2100 : year;
                         cal.set(Calendar.YEAR, year);
-                        // ^ first set year for the line below to work correctly
-                        //with leap years - otherwise, date e.g. 29/02/2012
-                        //would be automatically corrected to 28/02/2012
 
                         day = (day > cal.getActualMaximum(Calendar.DATE)) ? cal.getActualMaximum(Calendar.DATE) : day;
                         clean = String.format("%02d%02d%02d", day, mon, year);
@@ -127,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
         despesaAdapter = new DespesaAdapter(despesas);
         recyclerViewDesp.setAdapter(despesaAdapter);
 
-
         // Botão adicionar nova despesa
         buttonAddDesp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,6 +142,10 @@ public class MainActivity extends AppCompatActivity {
 
                     despesas.add(despesa);
                     despesaAdapter.notifyDataSetChanged();
+
+                    Intent intent = new Intent(MainActivity.this, SyncService.class);
+                    intent.putExtra("despesa", despesa);
+                    startService(intent);
 
                     editTipoDespesa.setText("");
                     editTextDate.setText("");
@@ -175,11 +177,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     protected void onStop() {
         super.onStop();
 
-        // Descarte o diálogo se ele estiver sendo exibido
+        // Descarta o diálogo se ele estiver sendo exibido
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
@@ -202,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
             String textDate = data.getStringExtra("EXTRA_REPLY_TEXTDATE");
             String valorDespesa = data.getStringExtra("EXTRA_REPLY_VALORDESPESA");
 
-            // Aqui você pode adicionar ou editar a despesa na sua lista de despesas
         } else {
             Toast.makeText(
                     getApplicationContext(),
@@ -211,10 +213,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // MainActivity
     public void launchEditActivity(Despesa despesa) {
         Intent intent = new Intent(this, EditActivity.class);
         intent.putExtra("despesa", despesa);
+        intent.putExtra("IdDespesa", despesa.getId());
         mStartForResult.launch(intent);
     }
 
@@ -224,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     Despesa despesaEditada = (Despesa) data.getSerializableExtra("despesa");
-                    // Atualize sua lista de despesas aqui
+
                     int index = despesas.indexOf(despesaSelecionada);
                     if (index != -1) {
                         despesas.set(index, despesaEditada);
@@ -236,8 +238,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void sendDespByMessage() {
         Intent messageIntent = new Intent(Intent.ACTION_SEND);
-        messageIntent.setType("text/plain"); // Defina o tipo da Intent para enviar uma mensagem de texto
-        messageIntent.putExtra(Intent.EXTRA_TEXT, generateDespText()); // Use o conteúdo gerado para a mensagem
+        messageIntent.setType("text/plain");
+        messageIntent.putExtra(Intent.EXTRA_TEXT, generateDespText());
         startActivity(Intent.createChooser(messageIntent, "Enviar Mensagem de Texto"));
     }
 
@@ -280,10 +282,7 @@ public class MainActivity extends AppCompatActivity {
 
         @NonNull
         @Override
-
         public DespesaViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_despesa, parent, false);
             return new DespesaViewHolder(view);
         }
@@ -316,22 +315,16 @@ public class MainActivity extends AppCompatActivity {
 
             public DespesaViewHolder(@NonNull View itemView) {
                 super(itemView);
-                //itemView.setOnClickListener(this); // Adiciona o OnClickListener ao itemView
                 textViewTipoDespesa = itemView.findViewById(R.id.textViewTipoDespesa);
                 textViewTextDate = itemView.findViewById(R.id.textViewTextDate);
                 textViewValorDespesa = itemView.findViewById(R.id.textViewValorDespesa);
-
             }
-
             public void bind(Despesa despesa) {
                 textViewTipoDespesa.setText("Despesa: " + despesa.getTipoDespesa());
                 textViewTextDate.setText("Data: " + despesa.getDate());
                 textViewValorDespesa.setText("Valor: " + despesa.getValor());
 
             }
-
-
-
         }
         }
     }
