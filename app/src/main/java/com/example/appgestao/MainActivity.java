@@ -30,7 +30,7 @@ import com.example.appgestao.model.SyncService;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-
+//ISABELA PEREIRA DOS REIS - RA:212099
  public class MainActivity extends AppCompatActivity {
     public static final int NEW_EXPENSE_ACTIVITY_REQUEST_CODE = 1;
 
@@ -121,12 +121,10 @@ import com.google.firebase.database.FirebaseDatabase;
             }
         });
 
-        // RecyclerView
         recyclerViewDesp.setLayoutManager(new LinearLayoutManager(this));
         despesaAdapter = new DespesaAdapter(despesas);
         recyclerViewDesp.setAdapter(despesaAdapter);
 
-        // Botão adicionar nova despesa
         buttonAddDesp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -173,6 +171,8 @@ import com.google.firebase.database.FirebaseDatabase;
                 if (!(despesaSelecionada == null)) {
                     launchEditActivity(despesaSelecionada);
 
+                } else{
+                    SelectDialog();
                 }
             }
         });
@@ -182,7 +182,6 @@ import com.google.firebase.database.FirebaseDatabase;
     protected void onStop() {
         super.onStop();
 
-        // Descarta o diálogo se ele estiver sendo exibido
         if (dialog != null && dialog.isShowing()) {
             dialog.dismiss();
         }
